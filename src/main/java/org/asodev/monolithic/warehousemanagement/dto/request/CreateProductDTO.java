@@ -22,7 +22,7 @@ public class CreateProductDTO {
     @NotNull(message = "Quantity is required")
     @Positive(message = "Quantity must be a positive number")
     private int quantity;
-    private Category category;
+    private Long categoryId;
     private Boolean isActive;
 
 }

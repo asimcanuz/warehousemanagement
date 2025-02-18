@@ -13,22 +13,24 @@ services:
       POSTGRES_PASSWORD: mypassword
     ports:
       - "5432:5432"
-  app:
-    build: .
-    container_name: dev_app
-    restart: always
-    depends_on:
-      - postgres
-    ports:
-      - "8080:8080"
-    volumes:
-      - .:/app  # Mount local code for hot reloading
-      - ~/.m2:/root/.m2  # Cache Maven dependencies
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/warehousemanagement
-      SPRING_DATASOURCE_USERNAME: myuser
-      SPRING_DATASOURCE_PASSWORD: mypassword
-      SPRING_JPA_HIBERNATE_DDL_AUTO: create
+#  app:
+#    build: .
+#    container_name: dev_app
+#    restart: always
+#    depends_on:
+#      - postgres
+#    ports:
+#      - "8080:8080"
+#    volumes:
+#      - .:/app  # Mount local code for hot reloading
+#      - ~/.m2:/root/.m2  # Cache Maven dependencies
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/warehousemanagement
+#      SPRING_DATASOURCE_USERNAME: myuser
+#      SPRING_DATASOURCE_PASSWORD: mypassword
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: create
+#      JAVA_OPTS: -Dspring.devtools.restart.enabled=true -Dspring.devtools.livereload.enabled=true
+#      SPRING_PROFILES_ACTIVE: dev
 
 volumes:
     postgres_data:

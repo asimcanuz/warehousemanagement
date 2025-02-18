@@ -16,4 +16,7 @@ COPY src ./src
 EXPOSE 8080
 
 # Start the application with Devtools enabled
-CMD ["./mvnw", "spring-boot:run"]
+CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.profiles=dev", \
+     "-Dspring.devtools.restart.enabled=true", \
+     "-Dspring.devtools.livereload.enabled=true", \
+     "-Dspring.devtools.remote.secret=mysecret"]

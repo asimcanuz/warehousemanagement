@@ -69,8 +69,16 @@ public class CategoryService {
 
     }
 
-    public Category getCategoryById(Long categoryId) {
-        return categoryRepository.findById(categoryId).orElse(null);
+    public CategoryResponseDTO getCategoryById(Long categoryId) {
+        Optional<Category> category = categoryRepository.findById(categoryId);
+
+        if (category.isEmpty()) {
+            throw new WMSException("Category not found");
+        }
+
+        return CategoryConverter.fromCategory(category.get());
+
+
     }
 
     @Cacheable

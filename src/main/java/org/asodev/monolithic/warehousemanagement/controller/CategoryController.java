@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.asodev.monolithic.warehousemanagement.dto.request.CreateCategoryDTO;
+import org.asodev.monolithic.warehousemanagement.dto.response.CategoryResponseDTO;
 import org.asodev.monolithic.warehousemanagement.dto.response.GenericResponse;
-import org.asodev.monolithic.warehousemanagement.model.Category;
 import org.asodev.monolithic.warehousemanagement.service.CategoryService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +29,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public GenericResponse<Category> getCategoryById(@PathVariable Long id) {
+    public GenericResponse<CategoryResponseDTO> getCategoryById(@PathVariable Long id) {
         return GenericResponse.success(categoryService.getCategoryById(id));
     }
 
