@@ -1,6 +1,7 @@
 package org.asodev.monolithic.warehousemanagement;
 
 import jakarta.transaction.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import java.util.List;
 public class WarehouseService {
 
     @Transactional
+    @CacheEvict(value = "categories", allEntries = true)
     public void createCategories(JdbcTemplate jdbcTemplate) {
         String sql = "INSERT INTO categories (name, description, is_active) VALUES (?, ?, ?)";
         List<Object[]> batchArgs = new ArrayList<>();
@@ -21,6 +23,7 @@ public class WarehouseService {
     }
 
     @Transactional
+    @CacheEvict(value = "products", allEntries = true)
     public void createProducts(JdbcTemplate jdbcTemplate) {
         String sql = "INSERT INTO products (name, description, price, quantity, category_id, is_active) VALUES (?, ?, ?, ?, ?, ?)";
         List<Object[]> batchArgs = new ArrayList<>();

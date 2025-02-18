@@ -51,4 +51,15 @@ public class ProductController {
         productService.deleteProduct(id);
         return GenericResponse.success(null);
     }
+
+    @GetMapping("/search")
+    public GenericResponse<Map<String,Object>> searchProducts(
+            @RequestParam(defaultValue = "10") @Min(1) @Max(100) int limit,
+            @RequestParam(defaultValue = "0") @Min(0) int offset,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Boolean isActive
+    ) {
+        return GenericResponse.success(productService.searchProducts(limit, offset, name, categoryId,isActive));
+    }
 }

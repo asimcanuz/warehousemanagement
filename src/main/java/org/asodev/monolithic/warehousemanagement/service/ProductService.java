@@ -98,7 +98,18 @@ public class ProductService {
         List<Product> products = productRepository.findAllWithLimit(PageRequest.of(offset, limit));
         List<ProductResponseDTO> productResponseDTOS = products.parallelStream().map(ProductConverter::toProductResponseDTO).toList();
         response.put("products", productResponseDTOS);
-        response.put("total", productRepository.count());
+        response.put("total", productRepository.count()); // TODO : return the total number of products by active status
         return response;
+    }
+
+    @Cacheable(value = "products", key = "")
+    public Map<String, Object> searchProducts(int limit, int offset, String name, Long categoryId, Boolean isActive) {
+        Map<String, Object> response = new HashMap<>();
+        List<Product> products = productRepository.searchProducts(name, categoryId, isActive, PageRequest.of(offset, limit));
+        List<ProductResponseDTO> productResponseDTOS = products.parallelStream().map(ProductConverter::toProductResponseDTO).toList();
+        response.put("products", productResponseDTOS);
+        response.put("total", productRepository.count());// TODO : return the total number of products by filtered criteria
+        return response;
+
     }
 }

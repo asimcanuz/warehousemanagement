@@ -13,4 +13,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p WHERE p.isActive = true")
     List<Product> findAllWithLimit(PageRequest pageable);
+
+    @Query("SELECT p FROM Product p WHERE p.name LIKE %:name% AND (:categoryId IS NULL OR p.category.id = :categoryId) AND (:isActive IS NULL OR p.isActive = :isActive)")
+    List<Product> searchProducts(String name, Long categoryId, Boolean isActive, PageRequest of);
 }
