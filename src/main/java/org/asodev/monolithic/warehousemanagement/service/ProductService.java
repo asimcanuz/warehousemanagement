@@ -8,9 +8,10 @@ import org.asodev.monolithic.warehousemanagement.exception.ExceptionMessages;
 import org.asodev.monolithic.warehousemanagement.exception.WMSException;
 import org.asodev.monolithic.warehousemanagement.model.Product;
 import org.asodev.monolithic.warehousemanagement.repository.ProductRepository;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,6 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-@CacheConfig(cacheNames = "products")
 public class ProductService {
     private final ProductRepository productRepository;
 
@@ -29,14 +29,17 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    @CacheEvict(allEntries = true)
+    @CacheEvict(value = "product", allEntries = true)
     public void createProduct(CreateProductDTO createProductDTO) {
         Product product = ProductConverter.toProduct(createProductDTO);
         productRepository.save(product);
     }
 
-    @CacheEvict(key = "#productID")
-    public void updateProduct(Long productID, CreateProductDTO productDTO) {
+    @Caching(
+            evict = {@CacheEvict(value = "products", allEntries = true)},
+            put = {@CachePut(value = "product", key = "#productID")}
+    )
+    public Product updateProduct(Long productID, CreateProductDTO productDTO) {
         Optional<Product> foundProduct = productRepository.findById(productID);
         if (foundProduct.isEmpty()) {
             log.error(ExceptionMessages.PRODUCT_NOT_FOUND);
@@ -50,18 +53,23 @@ public class ProductService {
         product.setCategory(productDTO.getCategory() != null ? productDTO.getCategory() : product.getCategory());
         product.setDescription(productDTO.getDescription() != null ? productDTO.getDescription() : product.getDescription());
         product.setIsActive(productDTO.getIsActive() != null ? productDTO.getIsActive() : product.getIsActive());
-        productRepository.save(product);
+        return productRepository.save(product);
     }
 
-    @CacheEvict(key = "#productId")
+    @Caching(
+            evict = {@CacheEvict(value = "products", allEntries = true)},
+            put = {@CachePut(value = "product", key = "#productId")}
+    )
     public void deleteProduct(Long productId) {
         Product product = productRepository.findById(productId).orElse(null);
-        if (product != null) {
-            product.setIsActive(false);
-            productRepository.save(product);
+        if (product == null) {
+            log.error(ExceptionMessages.PRODUCT_NOT_FOUND);
+            throw new WMSException(ExceptionMessages.PRODUCT_NOT_FOUND);
         }
+        productRepository.delete(product);
     }
 
+    @Cacheable(value = "product", key = "#productId")
     public ProductResponseDTO getProductById(Long productId) {
 
         Optional<Product> product = productRepository.findById(productId);
@@ -74,7 +82,7 @@ public class ProductService {
         return ProductConverter.toProductResponseDTO(product.get());
     }
 
-    @Cacheable
+    @Cacheable(value = "products", key = "#limit + #offset")
     public Map<String, Object> getAllProducts(int limit, int offset) {
         Map<String, Object> response = new HashMap<>();
         List<Product> products = productRepository.findAllWithLimit(PageRequest.of(offset, limit));

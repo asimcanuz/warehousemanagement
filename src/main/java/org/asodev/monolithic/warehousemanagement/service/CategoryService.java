@@ -1,12 +1,15 @@
 package org.asodev.monolithic.warehousemanagement.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.asodev.monolithic.warehousemanagement.converter.CategoryConverter;
 import org.asodev.monolithic.warehousemanagement.dto.request.CreateCategoryDTO;
 import org.asodev.monolithic.warehousemanagement.dto.response.CategoryResponseDTO;
 import org.asodev.monolithic.warehousemanagement.exception.WMSException;
 import org.asodev.monolithic.warehousemanagement.model.Category;
 import org.asodev.monolithic.warehousemanagement.repository.CategoryRepository;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,8 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@Slf4j
+@CacheConfig(cacheNames = "categories")
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
@@ -24,7 +29,7 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    @CacheEvict(value = "categories", allEntries = true)
+    @CacheEvict(allEntries = true)
     public void createCategory(CreateCategoryDTO createCategoryDTO) {
         Optional<Category> parentCategory = categoryRepository.findById(createCategoryDTO.getParentCategoryId());
         Category category = Category.builder()
@@ -38,7 +43,7 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
-    @CacheEvict(value = "categories", key = "#categoryId")
+    @CachePut(key = "#categoryId")
     public void updateCategory(Long categoryId, CreateCategoryDTO createCategoryDTO) {
         Optional<Category> category = categoryRepository.findById(categoryId);
         if (category.isEmpty()) {
@@ -54,7 +59,7 @@ public class CategoryService {
         categoryRepository.save(updatedCategory);
     }
 
-    @CacheEvict(value = "categories", key = "#categoryId")
+    @CacheEvict(key = "#categoryId")
     public void deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElse(null);
         if (category != null) {
@@ -64,12 +69,11 @@ public class CategoryService {
 
     }
 
-    @Cacheable(value = "categories", key = "#categoryId")
     public Category getCategoryById(Long categoryId) {
         return categoryRepository.findById(categoryId).orElse(null);
     }
 
-    @Cacheable(value = "categories")
+    @Cacheable
     public Map<String, Object> getAllCategories(int limit, int offset) {
         Map<String, Object> response = new HashMap<>();
         List<Category> categories = categoryRepository.findAllWithLimit(PageRequest.of(offset, limit));
