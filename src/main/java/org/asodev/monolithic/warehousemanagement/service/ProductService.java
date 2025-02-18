@@ -9,6 +9,7 @@ import org.asodev.monolithic.warehousemanagement.exception.WMSException;
 import org.asodev.monolithic.warehousemanagement.model.Product;
 import org.asodev.monolithic.warehousemanagement.repository.ProductRepository;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -33,14 +34,21 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    @CacheEvict(value = "products", key = "#productID")
+    @CachePut(value = "products", key = "#productID")
     public void updateProduct(Long productID, CreateProductDTO productDTO) {
         Optional<Product> foundProduct = productRepository.findById(productID);
         if (foundProduct.isEmpty()) {
             log.error(ExceptionMessages.PRODUCT_NOT_FOUND);
             throw new WMSException(ExceptionMessages.PRODUCT_NOT_FOUND);
         }
-        Product product = ProductConverter.toProduct(productDTO);
+        Product product = foundProduct.get();
+
+        product.setName(productDTO.getName()!=null ? productDTO.getName() : product.getName());
+        product.setPrice(productDTO.getPrice() != null ? productDTO.getPrice() : product.getPrice());
+        product.setQuantity(productDTO.getQuantity());
+        product.setCategory(productDTO.getCategory() != null ? productDTO.getCategory() : product.getCategory());
+        product.setDescription(productDTO.getDescription() != null ? productDTO.getDescription() : product.getDescription());
+        product.setIsActive(productDTO.getIsActive() != null ? productDTO.getIsActive() : product.getIsActive());
         productRepository.save(product);
     }
 
