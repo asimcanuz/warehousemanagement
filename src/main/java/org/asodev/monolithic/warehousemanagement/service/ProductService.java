@@ -8,6 +8,7 @@ import org.asodev.monolithic.warehousemanagement.exception.ExceptionMessages;
 import org.asodev.monolithic.warehousemanagement.exception.WMSException;
 import org.asodev.monolithic.warehousemanagement.model.Product;
 import org.asodev.monolithic.warehousemanagement.repository.ProductRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -26,11 +27,14 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
+    @CacheEvict(value = "products", allEntries = true)
     public void createProduct(CreateProductDTO createProductDTO) {
         Product product = ProductConverter.toProduct(createProductDTO);
-        productRepository.save(product);
+
+        Product newProduct = productRepository.save(product);
     }
 
+    @CacheEvict(value = "products", key = "#productID")
     public void updateProduct(Long productID, CreateProductDTO productDTO) {
         Optional<Product> foundProduct = productRepository.findById(productID);
         if (foundProduct.isEmpty()) {
@@ -41,6 +45,7 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    @CacheEvict(value = "products", key = "#productId")
     public void deleteProduct(Long productId) {
         Product product = productRepository.findById(productId).orElse(null);
         if (product != null) {
@@ -49,6 +54,7 @@ public class ProductService {
         }
     }
 
+    @Cacheable(value = "products", key = "#productId")
     public ProductResponseDTO getProductById(Long productId) {
 
         Optional<Product> product = productRepository.findById(productId);
@@ -61,18 +67,13 @@ public class ProductService {
         return ProductConverter.toProductResponseDTO(product.get());
     }
 
-    @Cacheable(value="totalProducts")
-    public Long getTotalProducts() {
-        return productRepository.count();
-    }
-
     @Cacheable(value = "products")
     public Map<String, Object> getAllProducts(int limit, int offset) {
         Map<String, Object> response = new HashMap<>();
         List<Product> products = productRepository.findAllWithLimit(PageRequest.of(offset, limit));
         List<ProductResponseDTO> productResponseDTOS = products.parallelStream().map(ProductConverter::toProductResponseDTO).toList();
         response.put("products", productResponseDTOS);
-        response.put("total", getTotalProducts());
+        response.put("total", productRepository.count());
         return response;
     }
 }
