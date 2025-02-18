@@ -5,13 +5,6 @@ import org.asodev.monolithic.warehousemanagement.dto.response.CategoryResponseDT
 import org.asodev.monolithic.warehousemanagement.model.Category;
 
 public class CategoryConverter {
-    public static Category toCategory(CreateCategoryDTO createCategoryDTO) {
-        return Category.builder()
-                .name(createCategoryDTO.getName())
-                .description(createCategoryDTO.getDescription())
-                .build();
-    }
-
     public static CategoryResponseDTO fromCategory(Category category) {
         return CategoryResponseDTO.builder()
                 .id(category.getId())

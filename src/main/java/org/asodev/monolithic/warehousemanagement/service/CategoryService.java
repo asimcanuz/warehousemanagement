@@ -8,6 +8,7 @@ import org.asodev.monolithic.warehousemanagement.model.Category;
 import org.asodev.monolithic.warehousemanagement.repository.CategoryRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -71,7 +72,7 @@ public class CategoryService {
     @Cacheable(value = "categories")
     public Map<String, Object> getAllCategories(int limit, int offset) {
         Map<String, Object> response = new HashMap<>();
-        List<Category> categories = categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findAllWithLimit(PageRequest.of(offset, limit));
         List<CategoryResponseDTO> categoryResponseDTOS = categories.stream()
                 .map(CategoryConverter::fromCategory)
                 .toList();

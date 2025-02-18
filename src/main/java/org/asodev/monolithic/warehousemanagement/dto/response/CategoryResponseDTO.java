@@ -1,7 +1,6 @@
 package org.asodev.monolithic.warehousemanagement.dto.response;
 
 import lombok.*;
-import org.asodev.monolithic.warehousemanagement.model.Category;
 
 @Data
 @AllArgsConstructor
