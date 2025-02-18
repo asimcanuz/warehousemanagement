@@ -38,7 +38,6 @@ public class ProductService {
             throw new WMSException(ExceptionMessages.PRODUCT_NOT_FOUND);
         }
         Product product = ProductConverter.toProduct(productDTO);
-        product.setId(productID);
         productRepository.save(product);
     }
 
