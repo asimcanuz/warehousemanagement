@@ -37,4 +37,10 @@ public class GlobalExceptionHandler  {
         return GenericResponse.failed(errors.toString());
 
     }
+
+    @ExceptionHandler(Exception.class)
+    public GenericResponse<ExceptionResponse> handleException(Exception exception) {
+        log.error(exception.getLocalizedMessage());
+        return GenericResponse.failed(exception.getMessage());
+    }
 }

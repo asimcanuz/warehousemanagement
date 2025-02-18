@@ -55,12 +55,12 @@ Bu proje, bir depo yönetim sistemi uygulamasıdır. Bu uygulama, bir depo yöne
 - [ ] Ürünler için kategori ekleme ve listeleme
 - [ ] Ürünler için stok yönetimi
 - [ ] Kullanıcı kimlik doğrulama ve yetkilendirme ekleme
-- [ ] Ürün kategorileri ekleme ve yönetme
+- [x] Ürün kategorileri ekleme ve yönetme
 - [ ] Ürünler için fiyat geçmişi takibi ekleme
 - [ ] Ürünler için resim yükleme ve yönetme
 - [ ] Ürünler için detaylı arama ve filtreleme özellikleri ekleme
 - [ ] Ürünler için toplu veri yükleme (CSV/Excel) desteği ekleme
-- [ ] API dökümantasyonu için Swagger entegrasyonu
+- [x] API dökümantasyonu için Swagger entegrasyonu
 - [ ] Performans iyileştirmeleri ve sorgu optimizasyonları
 - [ ] Ürünler için müşteri yorumları ve değerlendirmeleri ekleme
 - [ ] Ürünler için kampanya ve indirim yönetimi ekleme

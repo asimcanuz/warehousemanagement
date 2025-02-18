@@ -12,4 +12,6 @@ public class CategoryResponseDTO {
     private String description;
     private Boolean isActive;
     private Long parentCategoryId;
+
+
 }
