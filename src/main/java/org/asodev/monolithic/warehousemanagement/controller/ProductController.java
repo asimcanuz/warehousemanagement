@@ -60,6 +60,9 @@ public class ProductController {
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) Boolean isActive
     ) {
+
+        // filter query
+
         return GenericResponse.success(productService.searchProducts(limit, offset, name, categoryId,isActive));
     }
 }

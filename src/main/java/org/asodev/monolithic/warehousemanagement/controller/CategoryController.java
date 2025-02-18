@@ -22,7 +22,7 @@ public class CategoryController {
 
     @GetMapping
     public GenericResponse<Map<String,Object>> getAllCategories(
-            @RequestParam (defaultValue = "10") @Min(1) @Max(100) int limit,
+            @RequestParam (defaultValue = "10") @Min(1) @Max(1000) int limit,
             @RequestParam (defaultValue = "0") @Min(0) int offset
     ) {
         return GenericResponse.success(categoryService.getAllCategories(limit,offset));

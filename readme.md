@@ -51,7 +51,7 @@ Bu proje, bir depo yönetim sistemi uygulamasıdır. Bu uygulama, bir depo yöne
 - [x] Ürün ekleme, güncelleme ve silme işlemlerini gerçekleştirme
 
 ## Eklenecek Özellikler
-- [ ] Ürünleri aktif/pasif duruma göre filtreleme
+- [X] Ürünleri aktif/pasif duruma göre filtreleme
 - [ ] Ürünler için kategori ekleme ve listeleme
 - [ ] Ürünler için stok yönetimi
 - [ ] Kullanıcı kimlik doğrulama ve yetkilendirme ekleme

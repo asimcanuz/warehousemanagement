@@ -1,5 +1,9 @@
 package org.asodev.monolithic.warehousemanagement.service;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.asodev.monolithic.warehousemanagement.converter.CategoryConverter;
@@ -14,8 +18,8 @@ import org.asodev.monolithic.warehousemanagement.model.Product;
 import org.asodev.monolithic.warehousemanagement.repository.ProductRepository;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
