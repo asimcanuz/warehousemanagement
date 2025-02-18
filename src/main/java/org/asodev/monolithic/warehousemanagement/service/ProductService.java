@@ -30,8 +30,7 @@ public class ProductService {
     @CacheEvict(value = "products", allEntries = true)
     public void createProduct(CreateProductDTO createProductDTO) {
         Product product = ProductConverter.toProduct(createProductDTO);
-
-        Product newProduct = productRepository.save(product);
+        productRepository.save(product);
     }
 
     @CacheEvict(value = "products", key = "#productID")
