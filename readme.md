@@ -1,6 +1,6 @@
 # Depo Yönetim Sistemi
 
-Bu proje, bir depo yönetim sistemi uygulamasıdır. Bu uygulama, bir depo yönetim sistemi için temel işlevleri içerir. Bu uygulama, ürün ekleme, güncelleme ve silme işlemlerini gerçekleştirebilir. Uygulama, bir veritabanı kullanarak verileri saklar ve bu verilere erişim sağlar. Uygulama, bir web API olarak sunulur ve istemciler, bu API'yi kullanarak uygulamaya erişebilir.
+Bu proje, bir depo yönetim sistemi uygulamasıdır. Bu uygulama, bir depo yönetim sistemi için temel işlevleri içerir.
 
 ## Proje Yapısı
 
