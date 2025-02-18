@@ -1,10 +1,11 @@
 version: '3.8'
-
 services:
-
-  db:
+  postgres:
     image: postgres:latest
+    container_name: dev_postgres
+    restart: always
     volumes:
+      - postgres_data:/var/lib/postgresql/data
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     environment:
       POSTGRES_DB: warehousemanagement
@@ -12,3 +13,22 @@ services:
       POSTGRES_PASSWORD: mypassword
     ports:
       - "5432:5432"
+  app:
+    build: .
+    container_name: dev_app
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app  # Mount local code for hot reloading
+      - ~/.m2:/root/.m2  # Cache Maven dependencies
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/warehousemanagement
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: mypassword
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+volumes:
+    postgres_data:

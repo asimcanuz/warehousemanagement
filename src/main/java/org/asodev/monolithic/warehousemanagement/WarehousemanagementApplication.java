@@ -18,13 +18,13 @@ public class WarehousemanagementApplication {
 		SpringApplication.run(WarehousemanagementApplication.class, args);
 	}
 
-//	@Bean
-//	public CommandLineRunner createData(JdbcTemplate jdbcTemplate) {
-//		return args -> {
-//			createCategories(jdbcTemplate);
-//			createProducts(jdbcTemplate);
-//		};
-//	}
+	@Bean
+	public CommandLineRunner createData(JdbcTemplate jdbcTemplate) {
+		return args -> {
+			createCategories(jdbcTemplate);
+			createProducts(jdbcTemplate);
+		};
+	}
 
 	@Transactional
 	public void createCategories(JdbcTemplate jdbcTemplate) {
