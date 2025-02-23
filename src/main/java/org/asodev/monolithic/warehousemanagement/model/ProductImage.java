@@ -2,7 +2,6 @@ package org.asodev.monolithic.warehousemanagement.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.domain.Auditable;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -10,17 +9,21 @@ import org.springframework.data.domain.Auditable;
 @Getter
 @Setter
 @Entity
-@Table(name = "categories")
-public class Category extends BaseModel {
+@Table(name = "product_images")
+public class ProductImage extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
-    private String name;
-    private String description;
-    private Boolean isActive=true;
+    private String url;
 
     @ManyToOne
-    @JoinColumn(name = "parent_category_id")
-    private Category parentCategory;
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
+    @Override
+    public Long getId() {
+        return id;
+    }
 }

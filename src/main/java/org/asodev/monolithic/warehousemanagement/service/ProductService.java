@@ -38,7 +38,7 @@ public class ProductService {
         Product product = Product.builder()
                 .name(createProductDTO.getName())
                 .price(createProductDTO.getPrice())
-                .quantity(createProductDTO.getQuantity())
+                .productStock(null)
                 .category(category)
                 .description(createProductDTO.getDescription())
                 .isActive(createProductDTO.getIsActive())
@@ -63,7 +63,7 @@ public class ProductService {
 
         product.setName(productDTO.getName()!=null ? productDTO.getName() : product.getName());
         product.setPrice(productDTO.getPrice() != null ? productDTO.getPrice() : product.getPrice());
-        product.setQuantity(productDTO.getQuantity());
+        product.setProductStock(null);
         product.setCategory(productDTO.getCategoryId() != null ? category : product.getCategory());
         product.setDescription(productDTO.getDescription() != null ? productDTO.getDescription() : product.getDescription());
         product.setIsActive(productDTO.getIsActive() != null ? productDTO.getIsActive() : product.getIsActive());
