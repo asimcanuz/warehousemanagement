@@ -51,28 +51,32 @@ Bu proje, bir depo yönetim sistemi uygulamasıdır. Bu uygulama, bir depo yöne
 - [x] Ürün ekleme, güncelleme ve silme işlemlerini gerçekleştirme
 
 ## Eklenecek Özellikler
-- [ ] Ürünleri aktif/pasif duruma göre filtreleme
-- [ ] Ürünler için kategori ekleme ve listeleme
+### FAZ-1 (15.03.2025)
+- [X] Ürünleri aktif/pasif duruma göre filtreleme
+- [X] API dökümantasyonu için Swagger entegrasyonu
+- [X] Ürünler için kategori ekleme ve listeleme
 - [ ] Ürünler için stok yönetimi
-- [ ] Kullanıcı kimlik doğrulama ve yetkilendirme ekleme
 - [x] Ürün kategorileri ekleme ve yönetme
 - [ ] Ürünler için fiyat geçmişi takibi ekleme
 - [ ] Ürünler için resim yükleme ve yönetme
 - [ ] Ürünler için detaylı arama ve filtreleme özellikleri ekleme
-- [ ] Ürünler için toplu veri yükleme (CSV/Excel) desteği ekleme
-- [x] API dökümantasyonu için Swagger entegrasyonu
-- [ ] Performans iyileştirmeleri ve sorgu optimizasyonları
-- [ ] Ürünler için müşteri yorumları ve değerlendirmeleri ekleme
+- [ ] Kullanıcı kimlik doğrulama ve yetkilendirme ekleme
 - [ ] Ürünler için kampanya ve indirim yönetimi ekleme
+- [ ] Ürünler için müşteri yorumları ve değerlendirmeleri ekleme
 - [ ] Ürünler için bildirim ve uyarı sistemi ekleme (örneğin, stok azaldığında)
-- [ ] Ürünler için raporlama ve analiz özellikleri ekleme
 - [ ] Müşteri yönetimi ve müşteri bilgileri ekleme
 - [ ] Müşteri sipariş geçmişi takibi
+- [ ] Ürün etiketleme ve kategorilendirme
+- [ ] Performans iyileştirmeleri ve sorgu optimizasyonları
+
+
+### FAZ-2
+- [ ] Ürünler için toplu veri yükleme (CSV/Excel) desteği ekleme
+- [ ] Ürünler için raporlama ve analiz özellikleri ekleme
 - [ ] Müşteri sadakat programı ve puan sistemi
 - [ ] Müşteri geri bildirim
 - [ ] Müşteri hedefleme ve analiz
 - [ ] Müşteri için öneri ve kişiselleştirme özellikleri
-- [ ] Ürün etiketleme ve kategorilendirme
 - [ ] Ürünler için SEO ve arama motoru optimizasyonu
 - [ ] Ürünler için sosyal medya entegrasyonu
 - [ ] Ürünler için pazaryeri entegrasyonu
