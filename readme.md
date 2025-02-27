@@ -52,10 +52,10 @@ Bu proje, bir depo yönetim sistemi uygulamasıdır. Bu uygulama, bir depo yöne
 
 ## Eklenecek Özellikler
 ### FAZ-1 (15.03.2025)
-- [X] Ürünleri aktif/pasif duruma göre filtreleme
-- [X] API dökümantasyonu için Swagger entegrasyonu
-- [X] Ürünler için kategori ekleme ve listeleme
-- [ ] Ürünler için stok yönetimi
+- [x] Ürünleri aktif/pasif duruma göre filtreleme
+- [x] API dökümantasyonu için Swagger entegrasyonu
+- [x] Ürünler için kategori ekleme ve listeleme
+- [x] Ürünler için stok yönetimi
 - [x] Ürün kategorileri ekleme ve yönetme
 - [ ] Ürünler için fiyat geçmişi takibi ekleme
 - [ ] Ürünler için resim yükleme ve yönetme
