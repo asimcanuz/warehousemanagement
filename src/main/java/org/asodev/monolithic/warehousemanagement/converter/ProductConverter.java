@@ -1,6 +1,5 @@
 package org.asodev.monolithic.warehousemanagement.converter;
 
-import org.asodev.monolithic.warehousemanagement.dto.request.CreateProductDTO;
 import org.asodev.monolithic.warehousemanagement.dto.response.ProductResponseDTO;
 import org.asodev.monolithic.warehousemanagement.model.Product;
 
