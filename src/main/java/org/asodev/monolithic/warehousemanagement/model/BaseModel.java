@@ -1,13 +1,14 @@
 package org.asodev.monolithic.warehousemanagement.model;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.springframework.data.domain.Auditable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.domain.Auditable;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @MappedSuperclass
 @Getter
