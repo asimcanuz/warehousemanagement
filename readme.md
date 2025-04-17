@@ -57,7 +57,6 @@ Bu proje, bir depo yönetim sistemi uygulamasıdır. Bu uygulama, bir depo yöne
 - [x] Ürünler için kategori ekleme ve listeleme
 - [x] Ürünler için stok yönetimi
 - [x] Ürün kategorileri ekleme ve yönetme
-- [ ] Ürünler için fiyat geçmişi takibi ekleme
 - [ ] Ürünler için resim yükleme ve yönetme
 - [ ] Ürünler için detaylı arama ve filtreleme özellikleri ekleme
 - [ ] Kullanıcı kimlik doğrulama ve yetkilendirme ekleme
@@ -71,6 +70,7 @@ Bu proje, bir depo yönetim sistemi uygulamasıdır. Bu uygulama, bir depo yöne
 
 
 ### FAZ-2
+- [ ] Ürünler için fiyat geçmişi takibi ekleme
 - [ ] Ürünler için toplu veri yükleme (CSV/Excel) desteği ekleme
 - [ ] Ürünler için raporlama ve analiz özellikleri ekleme
 - [ ] Müşteri sadakat programı ve puan sistemi
