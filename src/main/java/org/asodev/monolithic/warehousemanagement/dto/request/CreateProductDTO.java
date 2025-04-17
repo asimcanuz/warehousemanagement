@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
-import org.asodev.monolithic.warehousemanagement.model.Category;
 
 @Data
 @AllArgsConstructor
@@ -24,5 +23,12 @@ public class CreateProductDTO {
     private int quantity;
     private Long categoryId;
     private Boolean isActive;
+    @NotBlank(message = "SKU is required")
+    @NotNull(message = "SKU is required")
+    private String sku;
+
+    @NotBlank(message = "Barcode is required")
+    @NotNull(message = "Barcode is required")
+    private String barcode;
 
 }

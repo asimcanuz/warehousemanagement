@@ -14,4 +14,7 @@ public class ProductResponseDTO {
     private Integer quantity;
     private Long categoryId;
     private Boolean isActive;
+    private String sku;
+    private String barcode;
+
 }
