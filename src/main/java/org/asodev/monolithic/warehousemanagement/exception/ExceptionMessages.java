@@ -10,4 +10,6 @@ public class ExceptionMessages {
     public static final String PRODUCT_NOT_AVAILABLE = "Product not available";
     public static final String CUSTOMER_NOT_FOUND = "Customer not found";
     public static final String CUSTOMER_NAME_REQUIRED = "Customer name is required";
+    public static final String CUSTOMER_EMAIL_REQUIRED = "Customer email is required";
+    public static final String STOCK_NOT_FOUND = "Stock not found";
 }
