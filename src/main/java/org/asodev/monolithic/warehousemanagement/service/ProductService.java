@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.asodev.monolithic.warehousemanagement.converter.CategoryConverter;
 import org.asodev.monolithic.warehousemanagement.converter.ProductConverter;
 import org.asodev.monolithic.warehousemanagement.dto.request.CreateProductDTO;
+import org.asodev.monolithic.warehousemanagement.dto.request.ProductFilterDto;
 import org.asodev.monolithic.warehousemanagement.dto.request.UpdateProductDTO;
 import org.asodev.monolithic.warehousemanagement.dto.response.CategoryResponseDTO;
 import org.asodev.monolithic.warehousemanagement.dto.response.ProductResponseDTO;
@@ -16,10 +17,13 @@ import org.asodev.monolithic.warehousemanagement.exception.WMSException;
 import org.asodev.monolithic.warehousemanagement.model.Category;
 import org.asodev.monolithic.warehousemanagement.model.Product;
 import org.asodev.monolithic.warehousemanagement.repository.ProductRepository;
+import org.asodev.monolithic.warehousemanagement.specification.ProductSpecification;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -115,11 +119,20 @@ public class ProductService {
     }
 
     @Cacheable(value = "products")
-    public Map<String, Object> getAllProducts(int limit, int offset) {
+    public Map<String, Object> getAllProducts(int limit, int offset, ProductFilterDto filter) {
         Map<String, Object> response = new HashMap<>();
-        List<Product> products = productRepository.findAllWithLimit(PageRequest.of(offset, limit));
+        Page<Product> products;
+        if (filter != null) {
+            Specification<Product> specification = ProductSpecification.filterProducts(filter);
+           products = productRepository.findAll(specification,PageRequest.of(offset, limit));
+        }
+        else {
+            products = productRepository.findAll(PageRequest.of(offset, limit));
+        }
+
         List<ProductResponseDTO> productResponseDTOS = products.stream()
                 .map(ProductConverter::toProductResponseDTO).toList();
+
         response.put("products", productResponseDTOS);
         response.put("total", productRepository.count());
         return response;
