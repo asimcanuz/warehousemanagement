@@ -1,6 +1,10 @@
 package org.asodev.monolithic.warehousemanagement.service;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.asodev.monolithic.warehousemanagement.converter.CategoryConverter;
 import org.asodev.monolithic.warehousemanagement.dto.request.CreateCategoryDTO;
 import org.asodev.monolithic.warehousemanagement.dto.response.CategoryResponseDTO;
@@ -9,15 +13,11 @@ import org.asodev.monolithic.warehousemanagement.model.Category;
 import org.asodev.monolithic.warehousemanagement.repository.CategoryRepository;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
@@ -29,37 +29,42 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    @CacheEvict(allEntries = true)
+    @CacheEvict(cacheNames = "categories", allEntries = true)
     public void createCategory(CreateCategoryDTO createCategoryDTO) {
-        Optional<Category> parentCategory = categoryRepository.findById(createCategoryDTO.getParentCategoryId());
         Category category = Category.builder()
                 .name(createCategoryDTO.getName())
                 .description(createCategoryDTO.getDescription())
-                .parentCategory(parentCategory.orElse(null))
                 .build();
         if (category.getIsActive() == null) {
             category.setIsActive(true);
         }
+
+        if (createCategoryDTO.getParentCategoryId() != null) {
+            Category parentCategory = categoryRepository.findById(createCategoryDTO.getParentCategoryId())
+                    .orElseThrow(() -> new WMSException("Parent category not found"));
+            category.setParentCategory(parentCategory);
+        }
         categoryRepository.save(category);
     }
 
-    @CachePut(key = "#categoryId")
+    @CacheEvict(cacheNames = "categories", allEntries = true)
     public void updateCategory(Long categoryId, CreateCategoryDTO createCategoryDTO) {
-        Optional<Category> category = categoryRepository.findById(categoryId);
-        if (category.isEmpty()) {
-            throw new WMSException("Category not found");
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new WMSException("Category not found"));
+
+        category.setName(createCategoryDTO.getName());
+        category.setDescription(createCategoryDTO.getDescription());
+
+        if (createCategoryDTO.getParentCategoryId() != null) {
+            Category parentCategory = categoryRepository.findById(createCategoryDTO.getParentCategoryId())
+                    .orElseThrow(() -> new WMSException("Parent category not found"));
+            category.setParentCategory(parentCategory);
         }
 
-        Optional<Category> parentCategory = categoryRepository.findById(createCategoryDTO.getParentCategoryId());
-        Category updatedCategory = category.get();
-        updatedCategory.setName(createCategoryDTO.getName());
-        updatedCategory.setDescription(createCategoryDTO.getDescription());
-        updatedCategory.setParentCategory(parentCategory.orElse(null));
-
-        categoryRepository.save(updatedCategory);
+        categoryRepository.save(category);
     }
 
-    @CacheEvict(key = "#categoryId")
+    @CacheEvict(cacheNames = "categories", allEntries = true)
     public void deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId).orElse(null);
         if (category != null) {
@@ -69,6 +74,7 @@ public class CategoryService {
 
     }
 
+    @Cacheable(cacheNames = "categories", key = "#categoryId")
     public CategoryResponseDTO getCategoryById(Long categoryId) {
         Optional<Category> category = categoryRepository.findById(categoryId);
 
@@ -78,10 +84,9 @@ public class CategoryService {
 
         return CategoryConverter.fromCategory(category.get());
 
-
     }
 
-    @Cacheable
+    @Cacheable(cacheNames = "categoriesList", key = "'list_' + #limit + '_' + #offset")
     public Map<String, Object> getAllCategories(int limit, int offset) {
         Map<String, Object> response = new HashMap<>();
         List<Category> categories = categoryRepository.findAllWithLimit(PageRequest.of(offset, limit));

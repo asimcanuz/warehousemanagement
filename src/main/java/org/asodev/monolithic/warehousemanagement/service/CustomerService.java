@@ -22,7 +22,6 @@ public class CustomerService {
           .name(createCustomerDTO.name())
           .email(createCustomerDTO.email())
           .type(createCustomerDTO.type())
-          .address(createCustomerDTO.address())
           .phone(createCustomerDTO.phone())
           .build();
 

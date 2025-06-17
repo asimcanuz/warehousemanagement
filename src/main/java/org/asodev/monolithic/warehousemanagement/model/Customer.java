@@ -1,5 +1,6 @@
 package org.asodev.monolithic.warehousemanagement.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -37,8 +38,9 @@ public class Customer extends BaseModel {
     @Column(nullable = false)
     private CustomerType type;
 
-    @Column(nullable = false)
-    private String address;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Address> addresses = new ArrayList<>();
 
     private String phone;
 

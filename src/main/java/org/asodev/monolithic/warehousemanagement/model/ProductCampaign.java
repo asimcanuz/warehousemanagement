@@ -3,6 +3,7 @@ package org.asodev.monolithic.warehousemanagement.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @Entity
 @Table
 public class ProductCampaign extends BaseModel{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,14 +25,19 @@ public class ProductCampaign extends BaseModel{
 
     private String description;
 
+    @Column(name = "discount_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private DiscountType discountType;
+
     @Column(nullable = false)
-    private Double discountPercantage;
+    private BigDecimal amount;
 
     @Column(nullable = false)
     private LocalDateTime startDate;
 
     @Column(nullable = false)
     private LocalDateTime endDate;
+
     @ManyToMany
     @JoinTable(
             name = "product_campaign_products",
