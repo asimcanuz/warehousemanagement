@@ -58,7 +58,7 @@ Bu proje, bir depo yönetim sistemi uygulamasıdır. Bu uygulama, bir depo yöne
 - [x] Ürünler için stok yönetimi
 - [x] Ürün kategorileri ekleme ve yönetme
 - [ ] Ürünler için resim yükleme ve yönetme
-- [ ] Ürünler için detaylı arama ve filtreleme özellikleri ekleme
+- [X] Ürünler için detaylı arama ve filtreleme özellikleri ekleme
 - [ ] Kullanıcı kimlik doğrulama ve yetkilendirme ekleme
 - [ ] Ürünler için kampanya ve indirim yönetimi ekleme
 - [ ] Ürünler için müşteri yorumları ve değerlendirmeleri ekleme

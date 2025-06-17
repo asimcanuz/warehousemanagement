@@ -1,0 +1,171 @@
+package org.asodev.monolithic.warehousemanagement.service;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+import com.opencsv.CSVWriter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.asodev.monolithic.warehousemanagement.configuration.AwsS3Config;
+import org.asodev.monolithic.warehousemanagement.dto.response.FileResponseDTO;
+import org.asodev.monolithic.warehousemanagement.exception.FileOperationException;
+import org.asodev.monolithic.warehousemanagement.model.File;
+import org.asodev.monolithic.warehousemanagement.repository.FileRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class FileService {
+
+    private final FileRepository fileRepository;
+    private final AmazonS3 amazonS3;
+    private final AwsS3Config awsS3Config;
+
+    public FileResponseDTO uploadFile(MultipartFile file, String entityType, Long entityId) {
+        try {
+            // Generate unique filename
+            String originalFilename = file.getOriginalFilename();
+            String fileExtension = originalFilename != null ?
+                    originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+            String filename = UUID.randomUUID() + fileExtension;
+
+            // Create folder structure in S3
+            String s3Key = String.format("%s/%s/%s", entityType, entityId, filename);
+
+            // Set up metadata for S3 object
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(file.getSize());
+            metadata.setContentType(file.getContentType());
+
+            // Upload to S3
+            amazonS3.putObject(
+                    awsS3Config.getBucketName(),
+                    s3Key,
+                    file.getInputStream(),
+                    metadata
+            );
+
+            // Generate URL for the file
+            String fileUrl = amazonS3.getUrl(awsS3Config.getBucketName(), s3Key).toString();
+
+            // Save file metadata to database
+            File fileEntity = File.builder()
+                    .filename(filename)
+                    .originalFilename(originalFilename)
+                    .contentType(file.getContentType())
+                    .size(file.getSize())
+                    .entityType(entityType)
+                    .entityId(entityId)
+                    .filePath(s3Key)
+                    .fileUrl(fileUrl)
+                    .build();
+
+            fileEntity = fileRepository.save(fileEntity);
+            createCSVFileForS3(fileEntity);
+
+            return mapToFileResponseDTO(fileEntity);
+        } catch (IOException e) {
+            log.error("Failed to upload file to S3", e);
+            throw new FileOperationException("Failed to upload file: " + e.getMessage());
+        }
+    }
+
+    public byte[] getFile(Long fileId) {
+        File fileEntity = fileRepository.findById(fileId)
+                .orElseThrow(() -> new FileOperationException("File not found with id: " + fileId));
+
+        try {
+            S3Object s3Object = amazonS3.getObject(awsS3Config.getBucketName(), fileEntity.getFilePath());
+            InputStream inputStream = s3Object.getObjectContent();
+            return inputStream.readAllBytes();
+        } catch (IOException e) {
+            log.error("Failed to read file from S3", e);
+            throw new FileOperationException("Failed to read file: " + e.getMessage());
+        }
+    }
+
+    public List<FileResponseDTO> getFilesByEntity(String entityType, Long entityId) {
+        List<File> files = fileRepository.findByEntityTypeAndEntityId(entityType, entityId);
+        return files.stream()
+                .map(this::mapToFileResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteFile(Long fileId) {
+        File fileEntity = fileRepository.findById(fileId)
+                .orElseThrow(() -> new FileOperationException("File not found with id: " + fileId));
+
+        amazonS3.deleteObject(awsS3Config.getBucketName(), fileEntity.getFilePath());
+        fileRepository.delete(fileEntity);
+    }
+
+    public void createCSVFileForS3(File file) {
+        log.info("Creating CSV file for S3 with file details: {}", file);
+
+
+        String csvFileName = "file_metadata.csv";
+        Path localPath = Paths.get(System.getProperty("java.io.tmpdir"), csvFileName);
+
+        try {
+            boolean fileExists = Files.exists(localPath);
+
+            // Create the new data row
+            String[] data = {
+                    String.valueOf(file.getId()),
+                    file.getFilename(),
+                    file.getOriginalFilename(),
+                    file.getContentType(),
+                    String.valueOf(file.getSize()),
+                    file.getEntityType(),
+                    String.valueOf(file.getEntityId()),
+                    file.getFilePath(),
+                    file.getFileUrl()
+            };
+
+            // Use FileWriter with append=true to add to existing file
+            try (CSVWriter csvWriter = new CSVWriter(new FileWriter(localPath.toFile(), fileExists))) {
+                // Write header only if creating a new file
+                if (!fileExists) {
+                    String[] header = {"ID", "Filename", "Original Filename", "Content Type",
+                            "Size", "Entity Type", "Entity ID", "File Path", "File URL"};
+                    csvWriter.writeNext(header);
+                }
+
+                // Write the new data row
+                csvWriter.writeNext(data);
+            }
+
+            log.info("CSV file updated locally at: {}", localPath);
+
+        } catch (Exception e) {
+            log.error("Failed to create/update CSV file", e);
+            throw new FileOperationException("Failed to create/update CSV file: " + e.getMessage());
+        }
+    }
+
+    private FileResponseDTO mapToFileResponseDTO(File file) {
+        return FileResponseDTO.builder()
+                .id(file.getId())
+                .filename(file.getFilename())
+                .originalFilename(file.getOriginalFilename())
+                .contentType(file.getContentType())
+                .size(file.getSize())
+                .entityType(file.getEntityType())
+                .entityId(file.getEntityId())
+                .fileUrl(file.getFileUrl())
+                .build();
+    }
+}
