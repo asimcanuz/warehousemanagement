@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.asodev.monolithic.warehousemanagement.dto.response.FileResponseDTO;
 import org.asodev.monolithic.warehousemanagement.dto.response.GenericResponse;
+import org.asodev.monolithic.warehousemanagement.model.EntityType;
 import org.asodev.monolithic.warehousemanagement.service.FileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -33,7 +34,7 @@ public class FileController {
     })
     public GenericResponse<FileResponseDTO> uploadFile(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("entityType") String entityType,
+            @RequestParam("entityType") EntityType entityType,
             @RequestParam("entityId") Long entityId) {
         return GenericResponse.success(fileService.uploadFile(file, entityType, entityId));
     }

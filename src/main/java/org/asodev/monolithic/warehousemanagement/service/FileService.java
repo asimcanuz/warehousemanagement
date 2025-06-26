@@ -3,24 +3,20 @@ package org.asodev.monolithic.warehousemanagement.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
-import com.opencsv.CSVWriter;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.asodev.monolithic.warehousemanagement.configuration.AwsS3Config;
 import org.asodev.monolithic.warehousemanagement.dto.response.FileResponseDTO;
 import org.asodev.monolithic.warehousemanagement.exception.FileOperationException;
+import org.asodev.monolithic.warehousemanagement.model.EntityType;
 import org.asodev.monolithic.warehousemanagement.model.File;
 import org.asodev.monolithic.warehousemanagement.repository.FileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,7 +30,9 @@ public class FileService {
     private final AmazonS3 amazonS3;
     private final AwsS3Config awsS3Config;
 
-    public FileResponseDTO uploadFile(MultipartFile file, String entityType, Long entityId) {
+    private final ProductService productService;
+
+    public FileResponseDTO uploadFile(MultipartFile file, EntityType entityType, Long entityId) {
         try {
             // Generate unique filename
             String originalFilename = file.getOriginalFilename();
@@ -49,6 +47,7 @@ public class FileService {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
+
 
             // Upload to S3
             amazonS3.putObject(
@@ -74,7 +73,6 @@ public class FileService {
                     .build();
 
             fileEntity = fileRepository.save(fileEntity);
-            createCSVFileForS3(fileEntity);
 
             return mapToFileResponseDTO(fileEntity);
         } catch (IOException e) {
@@ -112,47 +110,13 @@ public class FileService {
         fileRepository.delete(fileEntity);
     }
 
-    public void createCSVFileForS3(File file) {
-        log.info("Creating CSV file for S3 with file details: {}", file);
+    private void validateEntityExists(EntityType entityType, Long entityId) {
+        boolean entityExists = switch (entityType) {
+            case PRODUCT-> productService.existsById(entityId);
+        };
 
-
-        String csvFileName = "file_metadata.csv";
-        Path localPath = Paths.get(System.getProperty("java.io.tmpdir"), csvFileName);
-
-        try {
-            boolean fileExists = Files.exists(localPath);
-
-            // Create the new data row
-            String[] data = {
-                    String.valueOf(file.getId()),
-                    file.getFilename(),
-                    file.getOriginalFilename(),
-                    file.getContentType(),
-                    String.valueOf(file.getSize()),
-                    file.getEntityType(),
-                    String.valueOf(file.getEntityId()),
-                    file.getFilePath(),
-                    file.getFileUrl()
-            };
-
-            // Use FileWriter with append=true to add to existing file
-            try (CSVWriter csvWriter = new CSVWriter(new FileWriter(localPath.toFile(), fileExists))) {
-                // Write header only if creating a new file
-                if (!fileExists) {
-                    String[] header = {"ID", "Filename", "Original Filename", "Content Type",
-                            "Size", "Entity Type", "Entity ID", "File Path", "File URL"};
-                    csvWriter.writeNext(header);
-                }
-
-                // Write the new data row
-                csvWriter.writeNext(data);
-            }
-
-            log.info("CSV file updated locally at: {}", localPath);
-
-        } catch (Exception e) {
-            log.error("Failed to create/update CSV file", e);
-            throw new FileOperationException("Failed to create/update CSV file: " + e.getMessage());
+        if (!entityExists) {
+            throw new EntityNotFoundException(entityType.getType() + " not found with id: " + entityId);
         }
     }
 

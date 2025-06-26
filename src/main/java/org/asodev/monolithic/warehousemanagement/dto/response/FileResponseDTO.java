@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.asodev.monolithic.warehousemanagement.model.EntityType;
 
 @Data
 @Builder
@@ -15,7 +16,7 @@ public class FileResponseDTO {
     private String originalFilename;
     private String contentType;
     private Long size;
-    private String entityType;
+    private EntityType entityType;
     private Long entityId;
     private String fileUrl;
 }

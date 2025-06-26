@@ -138,4 +138,8 @@ public class ProductService {
         return response;
     }
 
+    public boolean existsById(Long productId) {
+        return productRepository.existsById(productId);
+    }
+
 }

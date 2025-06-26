@@ -23,6 +23,6 @@ public class File extends BaseModel {
     private String filePath;
     private String fileUrl;
 
-    private String entityType; // product, order, category, campaing etc.
+    private EntityType entityType; // product, order, category, campaing etc.
     private Long entityId; // related entity ID
 }
