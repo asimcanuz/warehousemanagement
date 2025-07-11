@@ -1,12 +1,11 @@
 package org.asodev.monolithic.warehousemanagement.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.asodev.monolithic.warehousemanagement.configuration.AwsS3Config;
 import org.asodev.monolithic.warehousemanagement.dto.response.FileResponseDTO;
 import org.asodev.monolithic.warehousemanagement.exception.FileOperationException;
@@ -16,11 +15,13 @@ import org.asodev.monolithic.warehousemanagement.repository.FileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
@@ -34,11 +35,14 @@ public class FileService {
     private final ProductService productService;
 
     public FileResponseDTO uploadFile(MultipartFile file, EntityType entityType, Long entityId) {
+        // Validate that the entity exists
+        validateEntityExists(entityType, entityId);
         try {
             // Generate unique filename
             String originalFilename = file.getOriginalFilename();
-            String fileExtension = originalFilename != null ?
-                    originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+            String fileExtension = originalFilename != null
+                    ? originalFilename.substring(originalFilename.lastIndexOf("."))
+                    : "";
             String filename = UUID.randomUUID() + fileExtension;
 
             // Create folder structure in S3
@@ -49,14 +53,12 @@ public class FileService {
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
 
-
             // Upload to S3
             amazonS3.putObject(
                     awsS3Config.getBucketName(),
                     s3Key,
                     file.getInputStream(),
-                    metadata
-            );
+                    metadata);
 
             // Generate URL for the file
             String fileUrl = amazonS3.getUrl(awsS3Config.getBucketName(), s3Key).toString();
@@ -97,6 +99,8 @@ public class FileService {
     }
 
     public List<FileResponseDTO> getFilesByEntity(EntityType entityType, Long entityId) {
+        // Validate that the entity exists
+        validateEntityExists(entityType, entityId);
         List<File> files = fileRepository.findByEntityTypeAndEntityId(entityType, entityId);
         return files.stream()
                 .map(this::mapToFileResponseDTO)
@@ -113,7 +117,7 @@ public class FileService {
 
     private void validateEntityExists(EntityType entityType, Long entityId) {
         boolean entityExists = switch (entityType) {
-            case PRODUCT-> productService.existsById(entityId);
+            case PRODUCT -> productService.existsById(entityId);
         };
 
         if (!entityExists) {

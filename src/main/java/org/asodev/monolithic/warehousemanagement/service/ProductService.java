@@ -15,8 +15,10 @@ import org.asodev.monolithic.warehousemanagement.dto.response.ProductResponseDTO
 import org.asodev.monolithic.warehousemanagement.exception.ExceptionMessages;
 import org.asodev.monolithic.warehousemanagement.exception.WMSException;
 import org.asodev.monolithic.warehousemanagement.model.Category;
+import org.asodev.monolithic.warehousemanagement.model.File;
 import org.asodev.monolithic.warehousemanagement.model.Product;
 import org.asodev.monolithic.warehousemanagement.model.ProductImage;
+import org.asodev.monolithic.warehousemanagement.repository.FileRepository;
 import org.asodev.monolithic.warehousemanagement.repository.ProductImageRepository;
 import org.asodev.monolithic.warehousemanagement.repository.ProductRepository;
 import org.asodev.monolithic.warehousemanagement.specification.ProductSpecification;
@@ -41,6 +43,7 @@ public class ProductService {
     private final CategoryService categoryService;
     private final ProductStockService productStockService;
     private final ProductImageRepository productImageRepository;
+    private final FileRepository fileRepository;
 
     @CachePut(value = "products", key = "#createProductDTO.name")
     public void createProduct(CreateProductDTO createProductDTO) {
@@ -127,9 +130,8 @@ public class ProductService {
         Page<Product> products;
         if (filter != null) {
             Specification<Product> specification = ProductSpecification.filterProducts(filter);
-           products = productRepository.findAll(specification,PageRequest.of(offset, limit));
-        }
-        else {
+            products = productRepository.findAll(specification, PageRequest.of(offset, limit));
+        } else {
             products = productRepository.findAll(PageRequest.of(offset, limit));
         }
 
@@ -150,10 +152,13 @@ public class ProductService {
     }
 
     @Transactional
-    public void addProductImage(Long productId, String imageUrl) {
+    public void addProductImage(Long productId, Long imageId) {
         Product product = findProductById(productId);
+        File file = fileRepository.findById(imageId)
+                .orElseThrow(() -> new WMSException(ExceptionMessages.FILE_NOT_FOUND));
+
         productImageRepository.save(ProductImage.builder()
-                .url(imageUrl)
+                .url(file.getFileUrl())
                 .product(product)
                 .build());
     }
