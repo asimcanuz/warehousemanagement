@@ -22,6 +22,8 @@ import org.asodev.monolithic.warehousemanagement.repository.FileRepository;
 import org.asodev.monolithic.warehousemanagement.repository.ProductImageRepository;
 import org.asodev.monolithic.warehousemanagement.repository.ProductRepository;
 import org.asodev.monolithic.warehousemanagement.specification.ProductSpecification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,12 +34,12 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class ProductService {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductService.class);
 
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
@@ -47,6 +49,8 @@ public class ProductService {
 
     @CachePut(value = "products", key = "#createProductDTO.name")
     public void createProduct(CreateProductDTO createProductDTO) {
+        log.info("Creating new product: {}", createProductDTO.getName());
+
         CategoryResponseDTO categoryResponseDTO = categoryService.getCategoryById(createProductDTO.getCategoryId());
         Category category = CategoryConverter.toCategory(categoryResponseDTO);
 
@@ -58,7 +62,9 @@ public class ProductService {
                 .description(createProductDTO.getDescription())
                 .isActive(createProductDTO.getIsActive())
                 .build();
-        productRepository.save(product);
+
+        Product savedProduct = productRepository.save(product);
+        log.info("Product created successfully with ID: {} - Name: {}", savedProduct.getId(), savedProduct.getName());
     }
 
     @Transactional
