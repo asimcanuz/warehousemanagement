@@ -12,4 +12,6 @@ public class ExceptionMessages {
     public static final String CUSTOMER_NAME_REQUIRED = "Customer name is required";
     public static final String CUSTOMER_EMAIL_REQUIRED = "Customer email is required";
     public static final String STOCK_NOT_FOUND = "Stock not found";
+    public static final String IMAGE_NOT_BELONG_TO_PRODUCT = "Image does not belong to the product";
+    public static final String IMAGE_NOT_FOUND = "Image not found";
 }

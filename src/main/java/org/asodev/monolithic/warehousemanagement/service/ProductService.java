@@ -16,6 +16,8 @@ import org.asodev.monolithic.warehousemanagement.exception.ExceptionMessages;
 import org.asodev.monolithic.warehousemanagement.exception.WMSException;
 import org.asodev.monolithic.warehousemanagement.model.Category;
 import org.asodev.monolithic.warehousemanagement.model.Product;
+import org.asodev.monolithic.warehousemanagement.model.ProductImage;
+import org.asodev.monolithic.warehousemanagement.repository.ProductImageRepository;
 import org.asodev.monolithic.warehousemanagement.repository.ProductRepository;
 import org.asodev.monolithic.warehousemanagement.specification.ProductSpecification;
 import org.springframework.cache.annotation.CacheEvict;
@@ -38,6 +40,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
     private final ProductStockService productStockService;
+    private final ProductImageRepository productImageRepository;
 
     @CachePut(value = "products", key = "#createProductDTO.name")
     public void createProduct(CreateProductDTO createProductDTO) {
@@ -140,6 +143,28 @@ public class ProductService {
 
     public boolean existsById(Long productId) {
         return productRepository.existsById(productId);
+    }
+
+    public List<ProductImage> getProductImages(Long productId) {
+        return productImageRepository.findByProductId(productId);
+    }
+
+    @Transactional
+    public void addProductImage(Long productId, String imageUrl) {
+        Product product = findProductById(productId);
+        productImageRepository.save(ProductImage.builder()
+                .url(imageUrl)
+                .product(product)
+                .build());
+    }
+
+    public void deleteProductImage(Long productId, Long imageId) {
+        ProductImage productImage = productImageRepository.findById(imageId)
+                .orElseThrow(() -> new WMSException(ExceptionMessages.IMAGE_NOT_FOUND));
+        if (!productImage.getProduct().getId().equals(productId)) {
+            throw new WMSException(ExceptionMessages.IMAGE_NOT_BELONG_TO_PRODUCT);
+        }
+        productImageRepository.delete(productImage);
     }
 
 }

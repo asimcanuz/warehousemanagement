@@ -1,5 +1,6 @@
 package org.asodev.monolithic.warehousemanagement.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.asodev.monolithic.warehousemanagement.dto.request.CreateCustomerDTO;
 import org.asodev.monolithic.warehousemanagement.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/customers")
+@RequiredArgsConstructor
 public class CustomerController {
 
-  @Autowired
   private CustomerService customerService;
 
   @PostMapping

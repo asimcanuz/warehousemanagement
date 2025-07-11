@@ -99,52 +99,5 @@ public class WarehousemanagementApplication implements CommandLineRunner {
 		productRepository.save(product2);
 		productRepository.save(product3);
 		productRepository.save(product4);
-
-		readFileMetadataFromCsv();
-
 	}
-
-	private void readFileMetadataFromCsv() {
-		String csvFileName = "file_metadata.csv";
-		Path csvFilePath = Paths.get(System.getProperty("java.io.tmpdir"), csvFileName);
-
-		if (!Files.exists(csvFilePath)) {
-			log.info("CSV file not found at: {}, skipping file metadata import", csvFilePath);
-			return;
-		}
-
-		try (CSVReader csvReader = new CSVReader(new FileReader(csvFilePath.toFile()))) {
-			String[] header = csvReader.readNext(); // Skip header
-			if (header == null) {
-				log.warn("Empty CSV file found at: {}", csvFilePath);
-				return;
-			}
-
-			String[] line;
-			while ((line = csvReader.readNext()) != null) {
-				try {
-					File file = File.builder()
-							.id(Long.parseLong(line[0]))
-							.filename(line[1])
-							.originalFilename(line[2])
-							.contentType(line[3])
-							.size(Long.parseLong(line[4]))
-							.entityType(line[5])
-							.entityId(Long.parseLong(line[6]))
-							.filePath(line[7])
-							.fileUrl(line[8])
-							.build();
-
-					fileRepository.save(file);
-					log.info("Imported file metadata: {}", file.getFilename());
-				} catch (Exception e) {
-					log.error("Failed to import file metadata from CSV row: {}", Arrays.toString(line), e);
-				}
-			}
-			log.info("Completed importing file metadata from CSV");
-		} catch (Exception e) {
-			log.error("Failed to read CSV file: {}", csvFilePath, e);
-		}
-	}
-
 }
