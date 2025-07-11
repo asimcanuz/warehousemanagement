@@ -1,9 +1,9 @@
 package org.asodev.monolithic.warehousemanagement.model;
 
+import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-
-import java.util.Arrays;
 
 public enum EntityType {
     PRODUCT("product");
@@ -21,13 +21,10 @@ public enum EntityType {
 
     @JsonCreator
     public static EntityType fromString(String type) {
-        for (EntityType entityType : EntityType.values()) {
-            if (entityType.type.equalsIgnoreCase(type)) {
-                return entityType;
-            }
-        }
-
-        return Arrays.stream(EntityType.values()).filter(entityType -> entityType.type.equalsIgnoreCase(type)).findFirst().orElseThrow(()-> new IllegalArgumentException("Invalid EntityType: " + type));
+        return Arrays.stream(EntityType.values())
+                .filter(entityType -> entityType.type.equalsIgnoreCase(type))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid EntityType: " + type));
     }
 
     @Override
