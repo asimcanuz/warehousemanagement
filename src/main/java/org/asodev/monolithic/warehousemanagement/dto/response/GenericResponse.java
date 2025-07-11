@@ -17,10 +17,20 @@ public class GenericResponse<T> {
     }
 
     public static GenericResponse<ExceptionResponse> failed(String message) {
+        ExceptionResponse error = new ExceptionResponse();
+        error.setMessage(message);
         return GenericResponse.<ExceptionResponse>builder()
                 .status(WMSConstants.STATUS_FAILED)
                 .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-                .error(new ExceptionResponse(message))
+                .error(error)
+                .build();
+    }
+
+    public static GenericResponse<ExceptionResponse> failed(ExceptionResponse exceptionResponse) {
+        return GenericResponse.<ExceptionResponse>builder()
+                .status(WMSConstants.STATUS_FAILED)
+                .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .error(exceptionResponse)
                 .build();
     }
 
@@ -85,23 +95,29 @@ public class GenericResponse<T> {
     }
 
     public boolean equals(final Object o) {
-        if (o == this) return true;
-        if (!(o instanceof GenericResponse)) return false;
+        if (o == this)
+            return true;
+        if (!(o instanceof GenericResponse))
+            return false;
         final GenericResponse<?> other = (GenericResponse<?>) o;
-        if (!other.canEqual((Object) this)) return false;
+        if (!other.canEqual((Object) this))
+            return false;
         final Object this$status = this.getStatus();
         final Object other$status = other.getStatus();
-        if (this$status == null ? other$status != null : !this$status.equals(other$status)) return false;
+        if (this$status == null ? other$status != null : !this$status.equals(other$status))
+            return false;
         final Object this$httpStatus = this.getHttpStatus();
         final Object other$httpStatus = other.getHttpStatus();
         if (this$httpStatus == null ? other$httpStatus != null : !this$httpStatus.equals(other$httpStatus))
             return false;
         final Object this$data = this.getData();
         final Object other$data = other.getData();
-        if (this$data == null ? other$data != null : !this$data.equals(other$data)) return false;
+        if (this$data == null ? other$data != null : !this$data.equals(other$data))
+            return false;
         final Object this$error = this.getError();
         final Object other$error = other.getError();
-        if (this$error == null ? other$error != null : !this$error.equals(other$error)) return false;
+        if (this$error == null ? other$error != null : !this$error.equals(other$error))
+            return false;
         return true;
     }
 
@@ -124,7 +140,8 @@ public class GenericResponse<T> {
     }
 
     public String toString() {
-        return "GenericResponse(status=" + this.getStatus() + ", httpStatus=" + this.getHttpStatus() + ", data=" + this.getData() + ", error=" + this.getError() + ")";
+        return "GenericResponse(status=" + this.getStatus() + ", httpStatus=" + this.getHttpStatus() + ", data="
+                + this.getData() + ", error=" + this.getError() + ")";
     }
 
     public static class GenericResponseBuilder<T> {
@@ -161,7 +178,8 @@ public class GenericResponse<T> {
         }
 
         public String toString() {
-            return "GenericResponse.GenericResponseBuilder(status=" + this.status + ", httpStatus=" + this.httpStatus + ", data=" + this.data + ", error=" + this.error + ")";
+            return "GenericResponse.GenericResponseBuilder(status=" + this.status + ", httpStatus=" + this.httpStatus
+                    + ", data=" + this.data + ", error=" + this.error + ")";
         }
     }
 }
