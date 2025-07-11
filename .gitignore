@@ -46,7 +46,8 @@ Icon?
 *.swo
 *.bak
 
-//*.log
+# Log files and directories
+logs/
 *.log
 *.tmp
 *.temp
