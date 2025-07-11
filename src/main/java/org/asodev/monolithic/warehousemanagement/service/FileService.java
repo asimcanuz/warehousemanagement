@@ -3,6 +3,7 @@ package org.asodev.monolithic.warehousemanagement.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -95,7 +96,7 @@ public class FileService {
         }
     }
 
-    public List<FileResponseDTO> getFilesByEntity(String entityType, Long entityId) {
+    public List<FileResponseDTO> getFilesByEntity(EntityType entityType, Long entityId) {
         List<File> files = fileRepository.findByEntityTypeAndEntityId(entityType, entityId);
         return files.stream()
                 .map(this::mapToFileResponseDTO)

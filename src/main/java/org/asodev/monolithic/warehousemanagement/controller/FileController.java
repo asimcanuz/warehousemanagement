@@ -62,7 +62,7 @@ public class FileController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     public GenericResponse<List<FileResponseDTO>> getFilesByEntity(
-            @PathVariable String entityType,
+            @PathVariable EntityType entityType,
             @PathVariable Long entityId) {
         return GenericResponse.success(fileService.getFilesByEntity(entityType, entityId));
     }

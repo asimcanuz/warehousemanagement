@@ -1,37 +1,22 @@
 package org.asodev.monolithic.warehousemanagement;
 
-import com.opencsv.CSVReader;
 import org.asodev.monolithic.warehousemanagement.model.Category;
-import org.asodev.monolithic.warehousemanagement.model.File;
 import org.asodev.monolithic.warehousemanagement.model.Product;
 import org.asodev.monolithic.warehousemanagement.repository.CategoryRepository;
-import org.asodev.monolithic.warehousemanagement.repository.FileRepository;
 import org.asodev.monolithic.warehousemanagement.repository.ProductRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.io.FileReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 
 @SpringBootApplication
 public class WarehousemanagementApplication implements CommandLineRunner {
 
 	private final ProductRepository productRepository;
 	private final CategoryRepository categoryRepository;
-	private final FileRepository fileRepository;
-	private static final Logger log = LoggerFactory.getLogger(WarehousemanagementApplication.class);
 
-
-	public WarehousemanagementApplication(ProductRepository productRepository, CategoryRepository categoryRepository,  FileRepository fileRepository) {
+	public WarehousemanagementApplication(ProductRepository productRepository, CategoryRepository categoryRepository) {
 		this.productRepository = productRepository;
 		this.categoryRepository = categoryRepository;
-		this.fileRepository = fileRepository;
 	}
 
 	public static void main(String[] args) {
