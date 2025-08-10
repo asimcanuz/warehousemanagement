@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import org.asodev.monolithic.warehousemanagement.dto.response.AddressResponseDTO;
 import org.asodev.monolithic.warehousemanagement.dto.response.CustomerResponseDTO;
-import org.asodev.monolithic.warehousemanagement.model.Address;
 import org.asodev.monolithic.warehousemanagement.model.Customer;
 
 public class CustomerConverter {
@@ -14,7 +13,7 @@ public class CustomerConverter {
     List<AddressResponseDTO> addressDTOs = null;
     if (customer.getAddresses() != null) {
       addressDTOs = customer.getAddresses().stream()
-          .map(CustomerConverter::toAddressResponseDTO)
+          .map(AddressConverter::toAddressResponseDTO)
           .collect(Collectors.toList());
     }
 
@@ -29,20 +28,6 @@ public class CustomerConverter {
         .addresses(addressDTOs)
         .createdAt(customer.getCreatedAt())
         .updatedAt(customer.getUpdatedAt())
-        .build();
-  }
-
-  public static AddressResponseDTO toAddressResponseDTO(Address address) {
-    return AddressResponseDTO.builder()
-        .id(address.getId())
-        .type(address.getType())
-        .street(address.getStreet())
-        .city(address.getCity())
-        .state(address.getState())
-        .postalCode(address.getPostalCode())
-        .country(address.getCountry())
-        .additionalInfo(address.getAdditionalInfo())
-        .isActive(address.getIsActive())
         .build();
   }
 }

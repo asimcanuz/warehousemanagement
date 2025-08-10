@@ -6,7 +6,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum EntityType {
-    PRODUCT("product");
+    PRODUCT("product"),
+    CUSTOMER("customer"),
+    ADDRESS("address");
 
     private final String type;
 

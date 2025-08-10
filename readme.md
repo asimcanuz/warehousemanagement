@@ -25,39 +25,43 @@ Bu proje, bir depo yönetim sistemi uygulamasıdır. Bu uygulama, bir depo yöne
 ### Adımlar
 
 1. Projeyi klonlayın:
-    ```sh
-    git clone https://github.com/asimcanuz/warehousemanagement.git
-    cd warehousemanagement
-    ```
+
+```sh
+git clone https://github.com/asimcanuz/warehousemanagement.git
+cd warehousemanagement
+```
 
 2. Maven bağımlılıklarını yükleyin ve projeyi derleyin:
-    ```sh
-    mvn clean install
-    ```
+
+```sh
+mvn clean install
+```
 
 3. Docker imajını oluşturun ve çalıştırın:
+
     ```sh
     docker-compose up --build
     ```
-
+    docker-compose up --build
+    ```
 4. Uygulama artık `http://localhost:8080` adresinde çalışmaktadır.
-
 
 ## Eklenecek Özellikler
 
-### FAZ-1 
-- [x] Ürünleri aktif/pasif duruma göre filtreleme
-- [x] API dökümantasyonu için Swagger entegrasyonu
-- [x] Ürünler için kategori ekleme ve listeleme
-- [x] Ürünler için stok yönetimi
-- [x] Ürün kategorileri ekleme ve yönetme
+### FAZ-1
+
+- [X] Ürünleri aktif/pasif duruma göre filtreleme
+- [X] API dökümantasyonu için Swagger entegrasyonu
+- [X] Ürünler için kategori ekleme ve listeleme
+- [X] Ürünler için stok yönetimi
+- [X] Ürün kategorileri ekleme ve yönetme
 - [X] Ürünler için resim yükleme ve yönetme
 - [X] logging ve hata yönetimi
 - [X] Ürünler için detaylı arama ve filtreleme özellikleri ekleme
-- [ ] Müşteri entegrasyonu
+- [X] Müşteri entegrasyonu
 - [ ] Kullanıcı kimlik doğrulama ve yetkilendirme ekleme
 - [ ] Ürünler için kampanya ve indirim yönetimi ekleme
-- [ ] Müşteri sipariş geçmişi takibi 
+- [ ] Müşteri sipariş geçmişi takibi
 - [ ] Ürünler için envanter yönetimi ve takip sistemi ekleme
 - [ ] Ürün etiketleme ve kategorilendirme
 - [ ] Performans iyileştirmeleri ve sorgu optimizasyonları

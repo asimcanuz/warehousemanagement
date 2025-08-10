@@ -6,9 +6,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.asodev.monolithic.warehousemanagement.converter.CustomerConverter;
+import org.asodev.monolithic.warehousemanagement.dto.request.CreateAddressDTO;
 import org.asodev.monolithic.warehousemanagement.dto.request.CreateCustomerDTO;
 import org.asodev.monolithic.warehousemanagement.dto.request.CustomerFilterDTO;
+import org.asodev.monolithic.warehousemanagement.dto.request.UpdateAddressDTO;
 import org.asodev.monolithic.warehousemanagement.dto.request.UpdateCustomerDTO;
+import org.asodev.monolithic.warehousemanagement.dto.response.AddressResponseDTO;
 import org.asodev.monolithic.warehousemanagement.dto.response.CustomerResponseDTO;
 import org.asodev.monolithic.warehousemanagement.exception.WMSException;
 import org.asodev.monolithic.warehousemanagement.model.Customer;
@@ -33,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @CacheConfig(cacheNames = "customers")
 public class CustomerService {
   private final CustomerRepository customerRepository;
+  private final AddressService addressService;
 
   @CachePut(value = "customers", key = "#result.id", unless = "#result == null")
   @Transactional
@@ -197,85 +201,35 @@ public class CustomerService {
         .toList();
   }
 
-  // Address management methods
+  // Address management methods - delegating to AddressService
   @CacheEvict(value = { "customers", "customersList" }, allEntries = true)
   @Transactional
-  public CustomerResponseDTO addAddressToCustomer(Long customerId,
-      org.asodev.monolithic.warehousemanagement.dto.request.CreateAddressDTO addressDTO) {
+  public CustomerResponseDTO addAddressToCustomer(Long customerId, CreateAddressDTO addressDTO) {
     log.info("Adding address to customer with ID: {}", customerId);
 
-    Customer customer = customerRepository.findById(customerId)
-        .orElseThrow(() -> {
-          log.error("Customer not found with ID: {}", customerId);
-          return new WMSException("Customer not found with ID: " + customerId);
-        });
+    // Use AddressService to create the address
+    addressService.createAddress(customerId, addressDTO);
 
-    try {
-      org.asodev.monolithic.warehousemanagement.model.Address address = org.asodev.monolithic.warehousemanagement.model.Address
-          .builder()
-          .type(addressDTO.type())
-          .street(addressDTO.street())
-          .city(addressDTO.city())
-          .state(addressDTO.state())
-          .postalCode(addressDTO.postalCode())
-          .country(addressDTO.country())
-          .additionalInfo(addressDTO.additionalInfo())
-          .customer(customer)
-          .isActive(true)
-          .build();
-
-      customer.getAddresses().add(address);
-      Customer updatedCustomer = customerRepository.save(customer);
-
-      log.info("Address added successfully to customer with ID: {}", customerId);
-      return CustomerConverter.toCustomerResponseDTO(updatedCustomer);
-    } catch (Exception e) {
-      log.error("Error adding address to customer with ID: {}", customerId, e);
-      throw new WMSException("Failed to add address to customer: " + e.getMessage());
-    }
+    // Return updated customer data
+    return getCustomerById(customerId);
   }
 
   @CacheEvict(value = { "customers", "customersList" }, allEntries = true)
   @Transactional
-  public CustomerResponseDTO updateCustomerAddress(Long customerId, Long addressId,
-      org.asodev.monolithic.warehousemanagement.dto.request.UpdateAddressDTO addressDTO) {
+  public CustomerResponseDTO updateCustomerAddress(Long customerId, Long addressId, UpdateAddressDTO addressDTO) {
     log.info("Updating address {} for customer with ID: {}", addressId, customerId);
 
-    Customer customer = customerRepository.findById(customerId)
-        .orElseThrow(() -> {
-          log.error("Customer not found with ID: {}", customerId);
-          return new WMSException("Customer not found with ID: " + customerId);
-        });
-
-    org.asodev.monolithic.warehousemanagement.model.Address address = customer.getAddresses().stream()
-        .filter(addr -> addr.getId().equals(addressId))
-        .findFirst()
-        .orElseThrow(() -> {
-          log.error("Address not found with ID: {} for customer: {}", addressId, customerId);
-          return new WMSException("Address not found");
-        });
-
-    try {
-      address.setType(addressDTO.type());
-      address.setStreet(addressDTO.street());
-      address.setCity(addressDTO.city());
-      address.setState(addressDTO.state());
-      address.setPostalCode(addressDTO.postalCode());
-      address.setCountry(addressDTO.country());
-      address.setAdditionalInfo(addressDTO.additionalInfo());
-
-      if (addressDTO.isActive() != null) {
-        address.setIsActive(addressDTO.isActive());
-      }
-
-      Customer updatedCustomer = customerRepository.save(customer);
-
-      log.info("Address updated successfully for customer with ID: {}", customerId);
-      return CustomerConverter.toCustomerResponseDTO(updatedCustomer);
-    } catch (Exception e) {
-      log.error("Error updating address for customer with ID: {}", customerId, e);
-      throw new WMSException("Failed to update address: " + e.getMessage());
+    // Verify customer exists
+    if (!customerRepository.existsById(customerId)) {
+      log.error("Customer not found with ID: {}", customerId);
+      throw new WMSException("Customer not found with ID: " + customerId);
     }
+
+    // Use AddressService to update the address
+    addressService.updateAddress(addressId, addressDTO);
+
+    // Return updated customer data
+    return getCustomerById(customerId);
   }
 
   @CacheEvict(value = { "customers", "customersList" }, allEntries = true)
@@ -283,26 +237,29 @@ public class CustomerService {
   public void deleteCustomerAddress(Long customerId, Long addressId) {
     log.info("Deleting address {} for customer with ID: {}", addressId, customerId);
 
-    Customer customer = customerRepository.findById(customerId)
-        .orElseThrow(() -> {
-          log.error("Customer not found with ID: {}", customerId);
-          return new WMSException("Customer not found with ID: " + customerId);
-        });
-
-    boolean addressRemoved = customer.getAddresses().removeIf(address -> address.getId().equals(addressId));
-
-    if (!addressRemoved) {
-      log.error("Address not found with ID: {} for customer: {}", addressId, customerId);
-      throw new WMSException("Address not found");
+    // Verify customer exists
+    if (!customerRepository.existsById(customerId)) {
+      log.error("Customer not found with ID: {}", customerId);
+      throw new WMSException("Customer not found with ID: " + customerId);
     }
 
-    try {
-      customerRepository.save(customer);
-      log.info("Address deleted successfully for customer with ID: {}", customerId);
-    } catch (Exception e) {
-      log.error("Error deleting address for customer with ID: {}", customerId, e);
-      throw new WMSException("Failed to delete address: " + e.getMessage());
-    }
+    // Use AddressService to delete the address
+    addressService.deleteAddress(addressId);
+
+    log.info("Address deleted successfully for customer with ID: {}", customerId);
+  }
+
+  // Additional address-related methods using AddressService
+  public List<AddressResponseDTO> getCustomerAddresses(
+      Long customerId) {
+    log.info("Fetching addresses for customer with ID: {}", customerId);
+    return addressService.getAddressesByCustomerId(customerId);
+  }
+
+  public List<AddressResponseDTO> getCustomerActiveAddresses(
+      Long customerId) {
+    log.info("Fetching active addresses for customer with ID: {}", customerId);
+    return addressService.getActiveAddressesByCustomerId(customerId);
   }
 
   // Legacy method for backward compatibility

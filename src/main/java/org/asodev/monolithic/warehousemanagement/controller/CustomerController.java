@@ -8,6 +8,7 @@ import org.asodev.monolithic.warehousemanagement.dto.request.CreateCustomerDTO;
 import org.asodev.monolithic.warehousemanagement.dto.request.CustomerFilterDTO;
 import org.asodev.monolithic.warehousemanagement.dto.request.UpdateAddressDTO;
 import org.asodev.monolithic.warehousemanagement.dto.request.UpdateCustomerDTO;
+import org.asodev.monolithic.warehousemanagement.dto.response.AddressResponseDTO;
 import org.asodev.monolithic.warehousemanagement.dto.response.CustomerResponseDTO;
 import org.asodev.monolithic.warehousemanagement.dto.response.GenericResponse;
 import org.asodev.monolithic.warehousemanagement.model.CustomerType;
@@ -193,5 +194,29 @@ public class CustomerController {
       @PathVariable Long addressId) {
     customerService.deleteCustomerAddress(customerId, addressId);
     return GenericResponse.success(null);
+  }
+
+  @GetMapping("/{customerId}/addresses")
+  @Operation(summary = "Get customer addresses", description = "Retrieve all addresses for a specific customer")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Customer addresses retrieved successfully"),
+      @ApiResponse(responseCode = "404", description = "Customer not found"),
+      @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  public GenericResponse<List<AddressResponseDTO>> getCustomerAddresses(@PathVariable Long customerId) {
+    List<AddressResponseDTO> addresses = customerService.getCustomerAddresses(customerId);
+    return GenericResponse.success(addresses);
+  }
+
+  @GetMapping("/{customerId}/addresses/active")
+  @Operation(summary = "Get customer active addresses", description = "Retrieve all active addresses for a specific customer")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Customer active addresses retrieved successfully"),
+      @ApiResponse(responseCode = "404", description = "Customer not found"),
+      @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  public GenericResponse<List<AddressResponseDTO>> getCustomerActiveAddresses(@PathVariable Long customerId) {
+    List<AddressResponseDTO> addresses = customerService.getCustomerActiveAddresses(customerId);
+    return GenericResponse.success(addresses);
   }
 }

@@ -33,6 +33,8 @@ public class FileService {
     private final AwsS3Config awsS3Config;
 
     private final ProductService productService;
+    private final CustomerService customerService;
+    private final AddressService addressService;
 
     public FileResponseDTO uploadFile(MultipartFile file, EntityType entityType, Long entityId) {
         // Validate that the entity exists
@@ -118,6 +120,8 @@ public class FileService {
     private void validateEntityExists(EntityType entityType, Long entityId) {
         boolean entityExists = switch (entityType) {
             case PRODUCT -> productService.existsById(entityId);
+            case CUSTOMER -> customerService.existsById(entityId);
+            case ADDRESS -> addressService.existsById(entityId);
         };
 
         if (!entityExists) {

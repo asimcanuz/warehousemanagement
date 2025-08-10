@@ -16,12 +16,9 @@ public class ProductConverter {
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
-                .price(product.getPrice())
                 .quantity(null)
                 .categoryId(categoryId)
                 .isActive(product.getIsActive())
-                .barcode(product.getBarcode())
-                .sku(product.getSku())
                 .build();
     }
 }

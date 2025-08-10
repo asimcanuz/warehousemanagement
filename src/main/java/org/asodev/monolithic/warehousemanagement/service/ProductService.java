@@ -43,7 +43,6 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
-    private final ProductStockService productStockService;
     private final ProductImageRepository productImageRepository;
     private final FileRepository fileRepository;
 
@@ -56,8 +55,6 @@ public class ProductService {
 
         Product product = Product.builder()
                 .name(createProductDTO.getName())
-                .price(createProductDTO.getPrice())
-                .productStock(null)
                 .category(category)
                 .description(createProductDTO.getDescription())
                 .isActive(createProductDTO.getIsActive())
@@ -75,8 +72,6 @@ public class ProductService {
         Product product = findProductById(productId);
         product.setName(updateProductDTO.name());
 
-        product.setPrice(updateProductDTO.price());
-
         product.setDescription(updateProductDTO.description());
 
         if (updateProductDTO.isActive() != null) {
@@ -86,7 +81,6 @@ public class ProductService {
         if (updateProductDTO.categoryId() != null) {
             product.setCategory(getCategory(updateProductDTO.categoryId()));
         }
-        productStockService.updateStock(product.getId(), updateProductDTO.stock());
 
         productRepository.save(product);
         log.info("Product updated successfully: {}", product.getId());
